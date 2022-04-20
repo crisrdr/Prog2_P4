@@ -167,4 +167,21 @@ int tree_postOrder (FILE *f, const BSTree * tree){
 }
 
 
-/**** TODO: find_min, find_max, insert, contains, remove ****/
+/**** TO DO: find_min, find_max, insert, contains, remove ****/
+
+void * tree_find_min (BSTree * tree){
+
+    if (!tree) return NULL;
+
+    
+
+}
+
+void * tree_find_max (BSTree * tree){
+
+}
+
+
+/* tree_find_min: devuelve el elemento más pequeño almacenado en el árbol */
+
+/* tree_find_max: devuelve el elemento más grande almacenado en el árbol */
