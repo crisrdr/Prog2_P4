@@ -2,11 +2,15 @@
 #include <stdio.h>
 #include "bstree.h"
 
+
+#define MAX_BUFFER 64 // Maximum file line size
+
 /* START [_BSTNode] */
 typedef struct _BSTNode {
     void * info;
     struct _BSTNode * left;
     struct _BSTNode * right;
+    struct _BSTNode * parent;
 } BSTNode;
 /* END [_BSTNode] */
 
@@ -29,13 +33,15 @@ BSTNode * _bst_node_new(){
     }
 
     pn->left = pn->right = NULL;
+    pn->parent =NULL;
     pn->info = NULL;
     return pn;
 }
 
 void _bst_node_free (BSTNode * pn){
     if (!pn) return;
-
+    if(pn->info)
+        free(pn->info);
     free(pn);
 }
 
