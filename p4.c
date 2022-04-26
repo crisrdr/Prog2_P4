@@ -33,6 +33,8 @@ int main (int argc, char *argv[]){
 
     fclose(f);
 
+    tree_preOrder(stdout,tree);
+
     min = tree_find_min(tree);
     max = tree_find_max(tree);
 
@@ -50,7 +52,6 @@ int main (int argc, char *argv[]){
     point_print(stdout, max);
     fprintf(stdout,"\n");
     
-
     tree_destroy(tree);
 
     return EXIT_SUCCESS;
@@ -93,17 +94,7 @@ BSTree * tree_read_points_from_file(FILE * pf){
             point_free(p);
             return NULL;      
         }
-
     }
 
     return t;
-}
-
-Status points_free_rec (BSTree *tree){
-    BSTree *left = NULL, *right = NULL;
-    if (!tree) return ERROR;
-
-    left
-
-
 }

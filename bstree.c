@@ -205,7 +205,7 @@ void * tree_find_min (BSTree * tree){
         auxN = auxN->left;
     }
 
-    return auxN;
+    return auxN->info;
 }
 
 void * tree_find_max (BSTree * tree){
@@ -220,7 +220,7 @@ void * tree_find_max (BSTree * tree){
         auxN = auxN->right;
     }
 
-    return auxN;
+    return auxN->info;
 }
 
 Bool tree_contains (BSTree * tree, const void * elem);
@@ -232,6 +232,8 @@ Status tree_insert (BSTree * tree, const void * elem){
 
     nodeAux = _bst_insert_rec(tree->root, elem, tree->cmp_ele);
     if (!nodeAux) return ERROR;
+
+    tree->root = nodeAux;
 
     return OK;
 }
