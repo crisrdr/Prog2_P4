@@ -10,7 +10,8 @@ BSTree * tree_read_points_from_file(FILE * pf);
 int main (int argc, char *argv[]){
     FILE *f = NULL;
     BSTree *tree = NULL;
-    Point *min = NULL, *max = NULL;
+    Point *min = NULL, *max = NULL, *p = NULL;
+    int x, y;
 
     if (argc < 2){
         fprintf(stdout,"Arguments missing\n");
@@ -51,6 +52,17 @@ int main (int argc, char *argv[]){
     fprintf(stdout,"Maximun of the tree: ");
     point_print(stdout, max);
     fprintf(stdout,"\n");
+
+    fprintf(stdout, "Introduce la coordenada x: ");
+    scanf("%d", &x);
+    fprintf(stdout,"Introduce la coordenada y: ");
+    scanf("%d", &y);
+
+    p = point_new (x, y, BARRIER);
+
+    fprintf(stdout, "¿Se encuentra el punto ");
+    point_print(stdout, p);
+    fprintf(stdout, " en el árbol?: %s\n", tree_contains(tree, p) ? "TRUE" : "FALSE");
     
     tree_destroy(tree);
 

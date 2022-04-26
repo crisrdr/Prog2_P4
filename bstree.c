@@ -134,6 +134,27 @@ BSTNode *_bst_insert_rec (BSTNode *pn, const void *elem, P_tree_ele_cmp cmp_ele)
     return pn;
 }
 
+BSTNode *_bst_remove_rec (BSTNode *nd, const void *elem, P_tree_ele_cmp cmp_ele){
+    int cmp;
+
+    if (!nd || !elem) return NULL;
+
+    cmp = cmp_ele (nd, elem);
+    if (cmp == 0){
+        if ((nd->left == NULL) && (nd->right == NULL)) 
+            nd->parent.
+            nd = NULL;
+
+
+    } else if (cmp < 0){
+        _bst_remove_rec (nd->left, elem, cmp_ele);
+    } else {
+        _bst_remove_rec (nd->right, elem, cmp_ele);
+    }
+
+    return NULL;
+}
+
 /*** BSTree TAD functions ***/
 BSTree * tree_init(P_tree_ele_print print_ele, P_tree_ele_cmp cmp_ele){
     BSTree * tree = NULL;
@@ -229,7 +250,25 @@ void * tree_find_max (BSTree * tree){
     return auxN->info;
 }
 
-Bool tree_contains (BSTree * tree, const void * elem);
+Bool tree_contains (BSTree * tree, const void * elem){
+    int cmp;
+    BSTNode *nd = NULL;
+
+    if (!tree || !elem) return FALSE;
+
+    if (tree_isEmpty(tree)) return FALSE;
+
+    nd = tree->root;
+    while (nd != NULL){
+        cmp = tree->cmp_ele (elem, nd->info);
+        if (cmp == 0) return TRUE;
+        else if (cmp < 0){
+            nd = nd->left;
+        } else nd = nd->right;
+    }
+
+    return FALSE;
+}
 
 Status tree_insert (BSTree * tree, const void * elem){
     BSTNode *nodeAux = NULL;
@@ -244,4 +283,6 @@ Status tree_insert (BSTree * tree, const void * elem){
     return OK;
 }
 
-Status tree_remove (BSTree * tree, const void * elem);
+Status tree_remove (BSTree * tree, const void * elem){
+
+}
