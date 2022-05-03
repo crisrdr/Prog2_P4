@@ -12,17 +12,18 @@ int main (int argc, char *argv[]){
     BSTree *tree = NULL;
     Point *min = NULL, *max = NULL, *p = NULL;
     int x, y;
+    Bool st;
 
     if (argc < 2){
-        fprintf(stdout,"Arguments missing\n");
+        fprintf(stdout,"Faltan argumentos\n");
         return EXIT_FAILURE;
     } else if (argc > 2){
-        fprintf(stdout,"Too many arguments\n");
+        fprintf(stdout,"Demasiados argumentos\n");
         return EXIT_FAILURE;
     }
 
     if ((f = fopen(argv[1], "r")) == NULL){   /* Argumento en posicion 1, nombre del fichero de texto */
-        fprintf(stdout,"Opening file failed\n");
+        fprintf(stdout,"Error al abrir el archivo\n");
         return EXIT_FAILURE;
     }
 
@@ -40,30 +41,94 @@ int main (int argc, char *argv[]){
     max = tree_find_max(tree);
 
     if (!min || !max){
-        fprintf(stdout, "Run failed\n");
+        fprintf(stdout, "Error al ejecutar el programa\n");
         tree_destroy(tree);
         return EXIT_FAILURE;
     }
 
-    fprintf(stdout,"Minimun of the tree: ");
+    fprintf(stdout, "\nTamaño del árbol: %ld\n", tree_size(tree));
+
+    fprintf(stdout,"Mínimo del árbol: ");
     point_print(stdout, min);
     fprintf(stdout,"\n");
 
-    fprintf(stdout,"Maximun of the tree: ");
+    fprintf(stdout,"Máximo del árbol: ");
     point_print(stdout, max);
     fprintf(stdout,"\n");
 
-    fprintf(stdout, "Introduce la coordenada x: ");
+    fprintf(stdout, "Introduce la coordenada x del punto a buscar: ");
     scanf("%d", &x);
-    fprintf(stdout,"Introduce la coordenada y: ");
+    fprintf(stdout, "Introduce la coordenada y del punto a buscar: ");
     scanf("%d", &y);
 
     p = point_new (x, y, BARRIER);
+    if (!p){
+        fprintf(stdout, "Error al ejecutar el programa\n");
+        tree_destroy(tree);
+        return EXIT_FAILURE;
+    }
 
     fprintf(stdout, "¿Se encuentra el punto ");
     point_print(stdout, p);
     fprintf(stdout, " en el árbol?: %s\n", tree_contains(tree, p) ? "TRUE" : "FALSE");
     
+    point_free(p);
+    p = NULL;
+
+    do {
+        fprintf(stdout, "Introduce la coordenada x del punto a eliminar: ");
+        scanf("%d", &x);
+        fprintf(stdout, "Introduce la coordenada y del punto a eliminar: ");
+        scanf("%d", &y);
+
+        p = point_new (x, y, BARRIER);
+        if (!p){
+            fprintf(stdout, "Error al ejecutar el programa\n");
+            tree_destroy(tree);
+            return EXIT_FAILURE;
+        }
+
+        st = tree_contains(tree, p);
+
+        if (!st){
+            fprintf(stdout, "El punto ");
+            point_print(stdout, p);
+            fprintf(stdout, " no se encuentra en el árbol.\n");
+            point_free(p);
+        }
+    } while (!st);
+
+    tree_remove(tree, p);
+
+    tree_preOrder(stdout, tree);
+
+    min = tree_find_min(tree);
+    max = tree_find_max(tree);
+
+    if (!min || !max){
+        fprintf(stdout, "Error al ejecutar el programa\n");
+        tree_destroy(tree);
+        return EXIT_FAILURE;
+    }
+
+    fprintf(stdout, "\nTamaño del árbol: %ld\n", tree_size(tree));
+
+    fprintf(stdout,"Mínimo del árbol: ");
+    point_print(stdout, min);
+    fprintf(stdout,"\n");
+
+    fprintf(stdout,"Máximo del árbol: ");
+    point_print(stdout, max);
+    fprintf(stdout,"\n");
+
+    fprintf(stdout, "¿Se encuentra el punto ");
+    point_print(stdout, p);
+    fprintf(stdout, " en el árbol?: %s\n", tree_contains(tree, p) ? "TRUE" : "FALSE");
+  /*  if (tree_isEmpty(tree)) printf ("El árbol está vacío\n");
+    }*/
+    
+    point_free(p);
+
     tree_destroy(tree);
 
     return EXIT_SUCCESS;

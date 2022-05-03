@@ -112,7 +112,7 @@ int _bst_postOrder_rec (BSTNode * pn, FILE * pf, P_tree_ele_print print_ele) {
     return count;
 }
 
-BSTNode *_bst_insert_rec (BSTNode *pn, const void *elem, P_tree_ele_cmp cmp_ele){
+BSTNode *_bst_insert_rec (BSTNode *pn, const void *elem, BSTNode *parent, P_tree_ele_cmp cmp_ele){
     int cmp;
 
     if (!elem || !cmp_ele) return NULL;
@@ -121,38 +121,64 @@ BSTNode *_bst_insert_rec (BSTNode *pn, const void *elem, P_tree_ele_cmp cmp_ele)
         pn = _bst_node_new();
         if (!pn) return NULL;
         pn->info = (void*) elem;
+        pn->parent = parent;
         return pn;
     }
 
     cmp = cmp_ele (elem, pn->info);
     if (cmp < 0){
-        pn->left = _bst_insert_rec(pn->left, elem, cmp_ele);
+        pn->left = _bst_insert_rec(pn->left, elem, pn, cmp_ele);
     } else if (cmp > 0){
-        pn->right = _bst_insert_rec(pn->right,elem,cmp_ele);
+        pn->right = _bst_insert_rec(pn->right, elem, pn, cmp_ele);
     }
 
     return pn;
 }
 
-BSTNode *_bst_remove_rec (BSTNode *nd, const void *elem, P_tree_ele_cmp cmp_ele){
-    int cmp;
+BSTNode *_bst_find_min_rec(BSTNode *nd){
+    BSTNode *auxNode = nd;
 
-    if (!nd || !elem) return NULL;
+    if (!nd) return NULL;
 
-    cmp = cmp_ele (nd, elem);
-    if (cmp == 0){
-        if ((nd->left == NULL) && (nd->right == NULL)) 
-            nd->parent.
-            nd = NULL;
-
-
-    } else if (cmp < 0){
-        _bst_remove_rec (nd->left, elem, cmp_ele);
-    } else {
-        _bst_remove_rec (nd->right, elem, cmp_ele);
+    while (nd->left != NULL){
+        if (!auxNode) return NULL;
+        auxNode = auxNode->left;
     }
+    return auxNode->info;
+}
 
-    return NULL;
+BSTNode *_bst_remove_rec (BSTNode *pn, const void *elem, P_tree_ele_cmp cmp_ele){
+    int cmp;
+    BSTNode *ret_node = NULL, *aux_node = NULL;
+
+    if (!pn || !elem) return NULL;
+
+    cmp = cmp_ele (elem, pn->info);
+    if (cmp < 0){
+        pn->left = _bst_remove_rec (pn->left, elem, cmp_ele);
+    } else if (cmp > 0){
+        pn->right = _bst_remove_rec (pn->right, elem, cmp_ele);
+    } else {
+        if (!pn->left && !pn->right){
+            _bst_node_free(pn);
+            return NULL;
+        } else if (!pn->left){
+            ret_node = pn->right;
+            _bst_node_free(pn);
+            return ret_node;
+        } else if (!pn->right){
+            ret_node = pn->left;
+            _bst_node_free(pn);
+            return ret_node;
+        } else {
+            aux_node = _bst_find_min_rec(pn->right);
+            pn->info = aux_node->info;
+            pn->right = _bst_remove_rec (pn->right, aux_node->info, cmp_ele);
+            return pn;
+        }
+    }
+    
+    return pn;
 }
 
 /*** BSTree TAD functions ***/
@@ -275,7 +301,7 @@ Status tree_insert (BSTree * tree, const void * elem){
 
     if (!tree || !elem) return ERROR;
 
-    nodeAux = _bst_insert_rec(tree->root, elem, tree->cmp_ele);
+    nodeAux = _bst_insert_rec(tree->root, elem, NULL, tree->cmp_ele);
     if (!nodeAux) return ERROR;
 
     tree->root = nodeAux;
@@ -285,4 +311,9 @@ Status tree_insert (BSTree * tree, const void * elem){
 
 Status tree_remove (BSTree * tree, const void * elem){
 
+    if (!tree || !elem) return ERROR;
+
+    if (!_bst_remove_rec(tree->root, elem, tree->cmp_ele)) return ERROR;
+
+    return OK;
 }
