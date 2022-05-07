@@ -147,9 +147,10 @@ BSTNode *_bst_find_min_rec(BSTNode *nd){
     return auxNode->info;
 }
 
+
 BSTNode *_bst_remove_rec (BSTNode *pn, const void *elem, P_tree_ele_cmp cmp_ele){
     int cmp;
-    BSTNode *ret_node = NULL, *aux_node = NULL;
+    BSTNode *aux_node = NULL;
 
     if (!pn || !elem) return NULL;
 
@@ -163,17 +164,25 @@ BSTNode *_bst_remove_rec (BSTNode *pn, const void *elem, P_tree_ele_cmp cmp_ele)
             _bst_node_free(pn);
             return NULL;
         } else if (!pn->left){
-            ret_node = pn->right;
+            aux_node = pn->right;
             _bst_node_free(pn);
-            return ret_node;
+            return aux_node;
         } else if (!pn->right){
-            ret_node = pn->left;
+            aux_node = pn->left;
             _bst_node_free(pn);
-            return ret_node;
+            return aux_node;
         } else {
-            aux_node = _bst_find_min_rec(pn->right);
+            aux_node = _bst_find_min_rec(pn->right);          
+            if (pn->info)
+                free(pn->info);  
             pn->info = aux_node->info;
-            pn->right = _bst_remove_rec (pn->right, aux_node->info, cmp_ele);
+            if (aux_node->right)
+                aux_node->parent->left = aux_node->right;
+            
+            else if (!aux_node->right)
+                aux_node->parent->left = NULL;
+            
+            free(aux_node);   
             return pn;
         }
     }
