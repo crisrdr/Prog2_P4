@@ -289,9 +289,7 @@ Bool tree_contains (BSTree * tree, const void * elem){
     int cmp;
     BSTNode *nd = NULL;
 
-    if (!tree || !elem) return FALSE;
-
-    if (tree_isEmpty(tree)) return FALSE;
+    if (!tree || !elem || tree_isEmpty(tree)) return FALSE;
 
     nd = tree->root;
     while (nd != NULL){

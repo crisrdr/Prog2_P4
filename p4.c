@@ -13,6 +13,7 @@ int main (int argc, char *argv[]){
     Point *min = NULL, *max = NULL, *p = NULL;
     int x, y;
     Bool st;
+    char r;
 
     if (argc < 2){
         fprintf(stdout,"Faltan argumentos\n");
@@ -46,7 +47,7 @@ int main (int argc, char *argv[]){
         return EXIT_FAILURE;
     }
 
-    fprintf(stdout, "\nTamaño del árbol: %ld\n", tree_size(tree));
+    fprintf(stdout, "Tamaño del árbol: %ld\n", tree_size(tree));
 
     fprintf(stdout,"Mínimo del árbol: ");
     point_print(stdout, min);
@@ -56,7 +57,7 @@ int main (int argc, char *argv[]){
     point_print(stdout, max);
     fprintf(stdout,"\n");
 
-    fprintf(stdout, "Introduce la coordenada x del punto a buscar: ");
+    fprintf(stdout, "\nIntroduce la coordenada x del punto a buscar: ");
     scanf("%d", &x);
     fprintf(stdout, "Introduce la coordenada y del punto a buscar: ");
     scanf("%d", &y);
@@ -75,57 +76,61 @@ int main (int argc, char *argv[]){
     point_free(p);
     p = NULL;
 
-    do {
-        fprintf(stdout, "Introduce la coordenada x del punto a eliminar: ");
-        scanf("%d", &x);
-        fprintf(stdout, "Introduce la coordenada y del punto a eliminar: ");
-        scanf("%d", &y);
+    do {        /* Bucle para eliminar tantos puntos como se deseé*/
+        do {
+            fprintf(stdout, "\nIntroduce la coordenada x del punto a eliminar: ");
+            scanf("%d", &x);
+            fprintf(stdout, "Introduce la coordenada y del punto a eliminar: ");
+            scanf("%d", &y);
 
-        p = point_new (x, y, BARRIER);
-        if (!p){
+            p = point_new (x, y, BARRIER);
+            if (!p){
+                fprintf(stdout, "Error al ejecutar el programa\n");
+                tree_destroy(tree);
+                return EXIT_FAILURE;
+            }
+
+            st = tree_contains(tree, p);
+
+            if (!st){
+                fprintf(stdout, "\nEl punto ");
+                point_print(stdout, p);
+                fprintf(stdout, " no se encuentra en el árbol.\n");
+                point_free(p);
+            }
+        } while (!st);
+
+        tree_remove(tree, p);
+
+        tree_preOrder(stdout, tree);
+
+        min = tree_find_min(tree);
+        max = tree_find_max(tree);
+
+        if (!min || !max){
             fprintf(stdout, "Error al ejecutar el programa\n");
             tree_destroy(tree);
             return EXIT_FAILURE;
         }
 
-        st = tree_contains(tree, p);
+        fprintf(stdout, "Tamaño del árbol: %ld\n", tree_size(tree));
 
-        if (!st){
-            fprintf(stdout, "El punto ");
-            point_print(stdout, p);
-            fprintf(stdout, " no se encuentra en el árbol.\n");
-            point_free(p);
-        }
-    } while (!st);
+        fprintf(stdout,"Mínimo del árbol: ");
+        point_print(stdout, min);
+        fprintf(stdout,"\n");
 
-    tree_remove(tree, p);
+        fprintf(stdout,"Máximo del árbol: ");
+        point_print(stdout, max);
+        fprintf(stdout,"\n");
 
-    tree_preOrder(stdout, tree);
+        fprintf(stdout, "\n¿Se encuentra el punto ");
+        point_print(stdout, p);
+        fprintf(stdout, " en el árbol?: %s\n", tree_contains(tree, p) ? "TRUE" : "FALSE");
 
-    min = tree_find_min(tree);
-    max = tree_find_max(tree);
+        fprintf(stdout, "\n¿Desea eliminar otro punto? (S/N): ");
+        scanf("\n%c", &r);
 
-    if (!min || !max){
-        fprintf(stdout, "Error al ejecutar el programa\n");
-        tree_destroy(tree);
-        return EXIT_FAILURE;
-    }
-
-    fprintf(stdout, "\nTamaño del árbol: %ld\n", tree_size(tree));
-
-    fprintf(stdout,"Mínimo del árbol: ");
-    point_print(stdout, min);
-    fprintf(stdout,"\n");
-
-    fprintf(stdout,"Máximo del árbol: ");
-    point_print(stdout, max);
-    fprintf(stdout,"\n");
-
-    fprintf(stdout, "¿Se encuentra el punto ");
-    point_print(stdout, p);
-    fprintf(stdout, " en el árbol?: %s\n", tree_contains(tree, p) ? "TRUE" : "FALSE");
-  /*  if (tree_isEmpty(tree)) printf ("El árbol está vacío\n");
-    }*/
+    } while (((r == 's') || (r == 'S')) && !tree_isEmpty(tree));
     
     point_free(p);
 
